@@ -4,8 +4,8 @@ const app = require("../index");
 describe("POST /users", () => {
   it("should create a new user successfully", async () => {
     const user = {
-      username: "john_doe_1",
-      email: "john.doe@example.com1",
+      username: "test",
+      email: "test@example.com1",
     };
 
     const response = await request(app)
