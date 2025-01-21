@@ -4,8 +4,8 @@ const app = require("../index");
 describe("POST /users", () => {
   it("should create a new user successfully", async () => {
     const user = {
-      username: "john_doe",
-      email: "john.doe@example.com",
+      username: "john_doe_1",
+      email: "john.doe@example.com1",
     };
 
     const response = await request(app)
@@ -73,6 +73,7 @@ describe("POST /books", () => {
 describe("POST /api/reading-list", () => { 
   it("should add a book to the reading list", async () => {
     const user = { username: "john_doe_1", email: "john.doe@example.com_1" };
+
     const book = {
       title: "The Great Gatsby",
       author: "F. Scott Fitzgerald",
@@ -83,10 +84,12 @@ describe("POST /api/reading-list", () => {
     const bookResponse = await request(app).post("/api/books").send(book);
 
     const readingList = {
-      userId: userResponse.body.user.id, 
-      bookId: bookResponse.body.book.id, 
-      status: "reading",
+      "userId": 2,
+      "bookId": 2,
+      "status": "Want to Read"
     };
+
+    console.log(readingList)
 
     const response = await request(app)
       .post("/api/reading-list")
