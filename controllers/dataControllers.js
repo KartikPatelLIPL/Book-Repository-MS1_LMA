@@ -10,15 +10,21 @@ const { Op, where } = require("sequelize");
 const addUser = async (req, res) => {
   try {
     const { username, email } = req.body;
-    
+    if (!username || !email) {
+      return res.status(400).json({ message: "Username and email are required" });
+    }
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+    if (username.length < 3) {
+      return res.status(400).json({ message: "Username must be at least 3 characters long" });
+    }
     const newUser = await UserModel.create({
-      username: username,
-      email: email,
+      username,
+      email,
     });
-
-    res
-      .status(201)
-      .json({ message: "User created successfully", user: newUser });
+    res.status(201).json({ message: "User created successfully", user: newUser });
 
   } catch (error) {
     if (error.name === "SequelizeUniqueConstraintError") {
@@ -28,16 +34,24 @@ const addUser = async (req, res) => {
   }
 };
 
+
 //   MS1_Assessment_1.2: Adding Books
 
 const addBook = async (req, res) => {
   try {
     const { title, author, genre, publicationYear } = req.body;
-
     if (!title || !author) {
-      return res
-        .status(400)
-        .json({ message: "Book title and author are required" });
+      return res.status(400).json({ message: "Book title and author are required" });
+    }
+    if (publicationYear && isNaN(publicationYear)) {
+      return res.status(400).json({ message: "Publication year must be a valid number" });
+    }
+
+    if (publicationYear && (publicationYear < 1000 || publicationYear > new Date().getFullYear())) {
+      return res.status(400).json({ message: "Publication year must be between 1000 and the current year" });
+    }
+    if (genre && typeof genre !== 'string') {
+      return res.status(400).json({ message: "Genre must be a valid string" });
     }
 
     const addNewBook = await bookModel.create({
@@ -46,13 +60,14 @@ const addBook = async (req, res) => {
       genre,
       publicationYear,
     });
-    res
-      .status(201)
-      .json({ message: "Book added successfully", book: addNewBook });
+
+    res.status(201).json({ message: "Book added successfully", book: addNewBook });
+    
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 };
+
 // MS1_Assessment_1.3: Searching for Books
 
 const searchBooks = async (req, res) => {
